@@ -3,9 +3,10 @@
 
 class Terrain {
 public:
-  Terrain(int move_cost) : move_cost(move_cost){};
-  Terrain[]();
+  Terrain();
+  Terrain(int move_cost);
   int getMoveCost();
+  void printTerrain();
 
 private:
   int move_cost;
@@ -15,7 +16,11 @@ private:
 class World {
 public:
   World(int width = WIDTH, int height = HEIGHT);
+  ~World();
   void generateWorld();
+  int getHeight();
+  int getWidth();
+  Terrain **getTiles();
 
 private:
   // TODO
