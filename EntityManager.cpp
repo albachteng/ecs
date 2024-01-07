@@ -6,14 +6,14 @@ void EntityManager::update() {
     entityMap[e->getTag()].push_back(e);
   }
   for (auto &e : entities) {
-    // TODO remove dead entities
+    // TODO: remove dead entities
   }
 }
 
 std::shared_ptr<Entity> EntityManager::addEntity(const std::string &tag) {
-  Entity e = Entity(tag);
-  this->toAdd.push_back(e);
-  return std::make_shared<Entity>(e);
+  auto e = std::make_shared<Entity>(tag, totalEntities++);
+  toAdd.push_back(e);
+  return e;
 };
 
 EntityVec &EntityManager::getEntities() { return this->entities; }

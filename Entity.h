@@ -1,4 +1,6 @@
+#include <memory>
 #include <string>
+
 class Entity {
   friend class EntityManager;
   size_t total = 0; // lifetime total, not current size
@@ -7,7 +9,11 @@ class Entity {
   bool alive = true;
 
 public:
+  std::shared_ptr<CTransform> cTransform;
+  std::shared_ptr<CName> cName;
+  std::shared_ptr<CShape> cShape;
+  std::shared_ptr<CBBox> cBBox;
   Entity();
-  Entity(const std::string &tag);
+  Entity(const std::string &tag, size_t id);
   std::string getTag();
 };

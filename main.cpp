@@ -1,3 +1,4 @@
+#include "Entity.cpp"
 #include "Terrain.cpp"
 #include "Vec2.h"
 #include "iostream"
@@ -27,3 +28,25 @@ int main() {
     }
   }
 }
+
+// TODO
+void sRender(std::vector<Entity> &entities) {
+  for (auto &e : entities) {
+    if (e.cTransform && e.cShape) { // TODO: bitset filter
+      e.cTransform->pos += e.cTransform->vel;
+      e.cShape->shape.setPosition(e.cTransform->pos);
+      window.draw(e.cShape->shape);
+    }
+  }
+};
+
+void sMovement(std::vector<Entity> &entities) {
+  for (auto &e : entities) {
+    if (e.cTransform) { // TODO: bitset filter
+      e.cTransform->pos += e.cTransform->vel;
+    }
+  }
+};
+
+// TODO - collisions
+void sPhysics(std::vector<Entity> &entities){};

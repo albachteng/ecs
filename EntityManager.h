@@ -13,11 +13,12 @@ class EntityManager {
   EntityVec entities;
   EntityVec toAdd;
   EntityMap entityMap;
+  size_t totalEntities = 0; // lifetime total
 
 public:
   EntityManager();
   void update();
-  static std::shared_ptr<Entity> addEntity(const std::string &tag);
+  std::shared_ptr<Entity> addEntity(const std::string &tag);
   EntityVec &getEntities();
   EntityVec &getEntities(const std::string &tag);
 };
