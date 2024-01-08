@@ -8,6 +8,10 @@ const Vec2 Vec2::operator+(const Vec2 &rhs) {
   return Vec2(this->x + rhs.x, this->y + rhs.y);
 };
 
+const float Vec2::X() { return x; }
+
+const float Vec2::Y() { return y; }
+
 Vec2 &Vec2::operator+=(const Vec2 &rhs) {
   x += rhs.x;
   y += rhs.y;
@@ -15,5 +19,5 @@ Vec2 &Vec2::operator+=(const Vec2 &rhs) {
 };
 
 void Vec2::print_vec2() {
-  std::cout << "X: " << this->x << " Y: " << this->y << "\n" << std::endl;
+  std::cout << "X: " << x << " Y: " << y << "\n" << std::endl;
 }
