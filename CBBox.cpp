@@ -1,9 +1,7 @@
 #include "CBBox.h"
 #include <iostream>
 
-CBBox::CBBox(){
-
-};
+CBBox::CBBox() { std::cout << "default bbox" << std::endl; };
 
 CBBox::CBBox(const Vec2 &min, const Vec2 &max) : min(min), max(max) {
   std::cout << "making bbox" << std::endl;

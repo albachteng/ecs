@@ -1,3 +1,4 @@
+#pragma once
 #include "CName.h"
 #include <string>
 

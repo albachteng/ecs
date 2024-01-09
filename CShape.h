@@ -1,13 +1,15 @@
+#pragma once
 #include <SFML/Graphics/CircleShape.hpp>
+#include <SFML/Graphics/Color.hpp>
 #include <cstddef>
-#define SIZE 50.0f;
+
+#define SIZE 50.0f
 
 class CShape {
-  size_t vertices = 3;
-  CShape();
-  CShape(size_t vertices);
-
 public:
-  sf::CircleShape shape = sf::CircleShape(SIZE, vertices);
-  int getVertices();
+  size_t vertices;
+  sf::CircleShape shape;
+  CShape(); // default shape
+  CShape(float radius, size_t vertices, const sf::Color &fill,
+         const sf::Color &outline, float thickness);
 };

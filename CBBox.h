@@ -1,4 +1,5 @@
-#include "Vec2.h"
+#include "Vec2.cpp"
+
 class CBBox {
   Vec2 min, max;
 

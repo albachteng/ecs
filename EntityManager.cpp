@@ -1,5 +1,7 @@
 #include "EntityManager.h"
 
+EntityManager::EntityManager(){};
+
 void EntityManager::update() {
   for (auto &e : toAdd) {
     entities.push_back(e);
@@ -24,3 +26,5 @@ EntityVec &EntityManager::getEntities() { return entities; }
 EntityVec &EntityManager::getEntities(const std::string &tag) {
   return entityMap[tag];
 }
+
+size_t EntityManager::getTotal() { return totalEntities; };

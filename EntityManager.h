@@ -1,4 +1,5 @@
-#include "Entity.h"
+#pragma once
+#include "Entity.cpp"
 #include <cstddef>
 #include <map>
 #include <string>
@@ -21,4 +22,5 @@ public:
   std::shared_ptr<Entity> addEntity(const std::string &tag);
   EntityVec &getEntities();
   EntityVec &getEntities(const std::string &tag);
+  size_t getTotal();
 };
