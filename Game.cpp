@@ -1,5 +1,7 @@
 #include "Game.h"
+#include <cstdlib>
 #include <iostream>
+#include <memory>
 
 Game::Game(const std::string &path) { init(path); }
 
@@ -8,6 +10,7 @@ void Game::init(const std::string &path) {
   // std::ifstream fin(path);
   // fin >> playerConfig.radius >> playerConfig.collisionradius >> etc
 
+  srand(time(NULL));
   // TODO read in from config file, fullscreen/windows
   window.create(sf::VideoMode(1280, 720), "game thang");
   window.setFramerateLimit(60);
@@ -26,8 +29,8 @@ void Game::run() {
   while (running) {
     entityManager.update();
     if (!paused) {
-      // sEnemySpawner();
-      // sMovement();
+      sEnemySpawner();
+      sMovement();
       // sCollision();
       // sUserInput();
     }
@@ -63,5 +66,44 @@ void Game::sRender() {
   window.display();
 }
 
+void Game::sMovement() {
+  for (auto &e : entityManager.getEntities()) {
+    if (e->cTransform) {
+      e->cTransform->pos.x += e->cTransform->vel.x;
+      e->cTransform->pos.y += e->cTransform->vel.y;
+    }
+    if (e->cTransform->pos.x >=
+            window.getSize().x - e->cShape->shape.getRadius() ||
+        e->cTransform->pos.x <= e->cShape->shape.getRadius()) {
+      e->cTransform->vel.x *= -1;
+    }
+    if (e->cTransform->pos.y >=
+            window.getSize().y - e->cShape->shape.getRadius() ||
+        e->cTransform->pos.y <= e->cShape->shape.getRadius()) {
+      e->cTransform->vel.y *= -1;
+    }
+  }
+}
+
 // TODO
-// void Game::sEnemySpawner() { auto e = entityManager.addEntity(args); }
+void Game::sEnemySpawner() {
+  if (currentFrame - lastEnemySpawn > 180) {
+
+    lastEnemySpawn = currentFrame;
+    float posX = rand() % window.getSize().x;
+    float posY = rand() % window.getSize().y;
+    float velX = rand() % 10;
+    float velY = rand() % 10;
+    int sides = rand() % 10;
+    int R = rand() % 255;
+    int G = rand() % 255;
+    int B = rand() % 255;
+    int angle = rand() % 360;
+    auto e = entityManager.addEntity("enemy");
+    e->cTransform =
+        std::make_shared<CTransform>(Vec2(posX, posY), Vec2(velX, velY));
+    e->cShape = std::make_shared<CShape>(50.0f, sides, sf::Color(R, G, B),
+                                         sf::Color(255, 255, 255), 5.0f);
+    e->cTransform->angle += angle;
+  }
+}
