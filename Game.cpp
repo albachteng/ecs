@@ -1,4 +1,6 @@
+#pragma once
 #include "Game.h"
+#include "Physics.h"
 #include <cstdlib>
 #include <iostream>
 #include <memory>
@@ -31,9 +33,8 @@ void Game::run() {
     if (!paused) {
       sEnemySpawner();
       sMovement();
-      // sCollision();
-        sUserClearInput();
-
+      sCollision();
+      sUserClearInput();
       sUserInput(event);
     }
     sRender();
@@ -86,16 +87,16 @@ void Game::sMovement() {
     }
   }
   if (player->cInput->left) {
-    player->cTransform->vel.x -= 1.0f;
+    player->cTransform->vel.x -= .1f;
   }
   if (player->cInput->right) {
-    player->cTransform->vel.x += 1.0f;
+    player->cTransform->vel.x += .1f;
   }
   if (player->cInput->up) {
-    player->cTransform->vel.y -= 1.0f;
+    player->cTransform->vel.y -= .1f;
   }
   if (player->cInput->down) {
-    player->cTransform->vel.y += 1.0f;
+    player->cTransform->vel.y += .1f;
   }
 }
 
@@ -124,12 +125,12 @@ void Game::sEnemySpawner() {
 
 void Game::sUserInput(sf::Event) {
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) ||
-      sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+      sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
     player->cInput->left = true;
     std::cout << "left" << std::endl;
   }
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) ||
-      sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+      sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
     player->cInput->right = true;
     std::cout << "right" << std::endl;
   }
@@ -150,4 +151,13 @@ void Game::sUserClearInput() {
   player->cInput->right = false;
   player->cInput->up = false;
   player->cInput->down = false;
+}
+
+void Game::sCollision() {
+  for (auto e : entityManager.getEntities("enemy"))
+    for (auto p : entityManager.getEntities("player"))
+      if (Physics::isCollision(e, p)) {
+        std::cout << "hit" << std::endl;
+        e->destroy();
+      }
 }

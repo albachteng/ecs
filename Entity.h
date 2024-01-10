@@ -12,9 +12,9 @@ class Entity {
   size_t total = 0; // lifetime total, not current size
   const size_t id = 0;
   const std::string tag = "default"; // TODO, int
-  bool alive = true;
 
 public:
+  bool alive = true;
   std::shared_ptr<CTransform> cTransform;
   std::shared_ptr<CName> cName;
   std::shared_ptr<CShape> cShape;

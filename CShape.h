@@ -8,6 +8,7 @@
 class CShape {
 public:
   size_t vertices;
+  float radius;
   sf::CircleShape shape;
   CShape(); // default shape
   CShape(float radius, size_t vertices, const sf::Color &fill,

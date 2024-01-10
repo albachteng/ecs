@@ -1,16 +1,18 @@
 #include "EntityManager.h"
+#include <__algorithm/remove_if.h>
 
 EntityManager::EntityManager(){};
+
+bool isDead(std::shared_ptr<Entity> e) { return !e->alive; }
 
 void EntityManager::update() {
   for (auto &e : toAdd) {
     entities.push_back(e);
     entityMap[e->getTag()].push_back(e);
   }
-  for (auto &e : entities) {
-    // TODO: remove dead entities
-    // std::remove_if
-  }
+  // TODO: remove dead entities
+  entities.erase(std::remove_if(entities.begin(), entities.end(), isDead),
+                 entities.end());
   toAdd.clear();
 }
 
