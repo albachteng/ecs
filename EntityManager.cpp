@@ -6,12 +6,18 @@ EntityManager::EntityManager(){};
 bool isDead(std::shared_ptr<Entity> e) { return !e->alive; }
 
 void EntityManager::update() {
+  entities.erase(std::remove_if(entities.begin(), entities.end(), isDead),
+                 entities.end());
+  entityMap["bullet"].erase(std::remove_if(entityMap["bullet"].begin(),
+                                           entityMap["bullet"].end(), isDead),
+                            entityMap["bullet"].end());
+  entityMap["enemy"].erase(std::remove_if(entityMap["bullet"].begin(),
+                                          entityMap["bullet"].end(), isDead),
+                           entityMap["bullet"].end());
   for (auto &e : toAdd) {
     entities.push_back(e);
     entityMap[e->getTag()].push_back(e);
   }
-  entities.erase(std::remove_if(entities.begin(), entities.end(), isDead),
-                 entities.end());
   toAdd.clear();
 }
 

@@ -181,11 +181,13 @@ void Game::spawnBullet(std::shared_ptr<Entity> p, const Vec2 &m) {
         std::make_shared<CTransform>(Vec2(posX, posY), Vec2(velX, velY));
     e->cShape = std::make_shared<CShape>(5.0f, sides, sf::Color(R, G, B),
                                          sf::Color(0, 0, 255), 1.0f);
-    e->cLifespan = std::make_shared<CLifespan>(currentFrame, 10);
+    e->cLifespan = std::make_shared<CLifespan>(currentFrame, 100);
   }
 };
 
 void Game::sCollision() {
+  std::cout << "number of bullets: "
+            << entityManager.getEntities("bullet").size() << std::endl;
   // TODO - the same but with bullets instead
   for (auto b : entityManager.getEntities("bullet")) {
     for (auto e : entityManager.getEntities("enemy")) {
