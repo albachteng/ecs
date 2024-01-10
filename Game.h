@@ -3,9 +3,20 @@
 #include <SFML/Graphics.hpp>
 #include <memory>
 
-struct BulletConfig {};
-struct EnemyConfig {};
-struct PlayerConfig {};
+typedef struct BulletConfig {
+  int throttle, sides, ttl, R, G, B;
+  float vel, outline;
+};
+
+typedef struct EnemyConfig {
+  float radius, outline;
+  int spawnate, maxVel, minVel, maxSides, minSides;
+};
+
+typedef struct PlayerConfig {
+  float velX, velY, radius, outline;
+  int R, G, B, r, g, b;
+} PlayerConfig;
 
 class Game {
   EntityManager entityManager;
@@ -38,7 +49,6 @@ class Game {
   void sCollision();
 
   void spawnPlayer();
-  void spawnEnemy();
   void spawnSmallEnemies(std::shared_ptr<Entity> entity);
   void spawnBullet(std::shared_ptr<Entity> entity, const Vec2 &mousePos);
   void spawnSpecial(std::shared_ptr<Entity> entity);

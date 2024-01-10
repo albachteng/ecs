@@ -2,20 +2,62 @@
 #include "Game.h"
 #include "Physics.h"
 #include <cstdlib>
+#include <fstream>
 #include <iostream>
 #include <memory>
+
+#define DFT_WIN_W 1280
+#define DFT_WIN_H 720
+#define DFT_FRAMERATE 60
+#define DFT_PAUSE_THROTTLE 5
+
+#define DFT_PL_VEL Vec2(1.0f, 1.0f)
+#define DFT_PL_RAD 50.0f
+#define DFT_PL_COLOR sf::Color(0, 0, 0)
+#define DFT_PL_OUTLINE_COLOR sf::Color(255, 0, 0)
+#define DFT_PL_OUTLINE 5.0f
+
+#define DFT_EN_SPAWNRATE 180
+#define DFT_EN_VEL_MAX 10
+#define DFT_EN_VEL_MIN 3
+#define DFT_EN_RAD 50.0f
+#define DFT_EN_MAX_SIDES 10
+#define DFT_EN_MIN_SIDES 3
+#define DFT_EN_OUTLINE 5.0f
+
+#define DFT_BLT_THROTTLE 20
+#define DFT_BLT_VEL 10.0f
+#define DFT_BLT_SIDES 10
+#define DFT_BLT_OUTLINE 1.0f
+#define DFT_BLT_TTL 100
+#define DFT_BLT_COLOR sf::Color(0, 0, 255)
+
+#define DFT_SM_EN_RESIZE 2.5f
+#define DFT_SM_EN_OUTLINE 1.0f
+#define DFT_SM_EN_TTL 180
+
+#define WHITE sf::Color(255, 255, 255)
 
 Game::Game(const std::string &path) { init(path); }
 
 void Game::init(const std::string &path) {
   // TODO: config
-  // std::ifstream fin(path);
-  // fin >> playerConfig.radius >> playerConfig.collisionradius >> etc
+  std::ifstream fin(path);
+  fin >> playerConfig.velX >> playerConfig.velY >> playerConfig.radius >>
+      playerConfig.outline >> playerConfig.R >> playerConfig.G >>
+      playerConfig.B >> playerConfig.r >> playerConfig.g >> playerConfig.b >>
+      enemyConfig.radius >> enemyConfig.outline >> enemyConfig.spawnate >>
+      enemyConfig.maxVel >> enemyConfig.minVel >> enemyConfig.maxSides >>
+      enemyConfig.minSides >> bulletConfig.throttle >> bulletConfig.sides >>
+      bulletConfig.ttl >> bulletConfig.R >> bulletConfig.G >> bulletConfig.B >>
+      bulletConfig.vel >> bulletConfig.outline;
+  std::cout << "XXX" << playerConfig.velX;
+  std::cout << playerConfig.velY;
 
   srand(time(NULL));
   // TODO read in from config file, fullscreen/windows
-  window.create(sf::VideoMode(1280, 720), "game thang");
-  window.setFramerateLimit(60);
+  window.create(sf::VideoMode(DFT_WIN_W, DFT_WIN_H), "game thang");
+  window.setFramerateLimit(DFT_FRAMERATE);
   spawnPlayer();
 }
 
@@ -47,18 +89,23 @@ void Game::run() {
 
 void Game::setPaused(bool p) {
   // eagerly pause, but don't unpause if they just hit P
-  if (currentFrame - lastPaused < 5)
+  if (currentFrame - lastPaused < DFT_PAUSE_THROTTLE)
     paused = p;
   lastPaused = currentFrame;
 };
 
 void Game::spawnPlayer() {
   auto entity = entityManager.addEntity("player");
-  entity->cTransform =
-      std::make_shared<CTransform>(Vec2(200.0f, 200.0f), Vec2(1.0f, 1.0f));
+  entity->cTransform = std::make_shared<CTransform>(
+      Vec2(window.getSize().x / 2, window.getSize().y / 2),
+      Vec2(playerConfig.velX, playerConfig.velY) /*  DFT_PL_VEL */);
   // TODO shape, input, etc
-  entity->cShape = std::make_shared<CShape>(50.0f, 8, sf::Color(0, 0, 0),
-                                            sf::Color(255, 0, 0), 5.0f);
+  entity->cShape = std::make_shared<CShape>(
+      playerConfig.radius, 8,
+      sf::Color(playerConfig.R, playerConfig.G, playerConfig.B),
+      sf::Color(playerConfig.r, playerConfig.g, playerConfig.b),
+      playerConfig.outline);
+  // DFT_PL_RAD, 8, DFT_PL_COLOR, DFT_PL_OUTLINE_COLOR, DFT_PL_OUTLINE);
   entity->cInput = std::make_shared<CInput>();
   player = entity;
 }
@@ -110,14 +157,15 @@ void Game::sMovement() {
 
 // TODO
 void Game::sEnemySpawner() {
-  if (currentFrame - lastEnemySpawn > 180) {
+  if (currentFrame - lastEnemySpawn > DFT_EN_SPAWNRATE) {
 
     lastEnemySpawn = currentFrame;
     float posX = rand() % window.getSize().x;
     float posY = rand() % window.getSize().y;
-    float velX = rand() % 10;
-    float velY = rand() % 10;
-    int sides = (rand() % 7) + 3;
+    float velX = rand() % enemyConfig.maxVel + enemyConfig.minVel;
+    float velY = rand() % enemyConfig.maxVel + enemyConfig.minVel;
+    int sides = rand() % (enemyConfig.maxSides - enemyConfig.minSides) +
+                enemyConfig.minSides;
     int R = rand() % 255;
     int G = rand() % 255;
     int B = rand() % 255;
@@ -125,12 +173,15 @@ void Game::sEnemySpawner() {
     auto e = entityManager.addEntity("enemy");
     e->cTransform =
         std::make_shared<CTransform>(Vec2(posX, posY), Vec2(velX, velY));
-    e->cShape = std::make_shared<CShape>(50.0f, sides, sf::Color(R, G, B),
-                                         sf::Color(255, 255, 255), 5.0f);
+    e->cShape =
+        std::make_shared<CShape>(enemyConfig.radius, sides, sf::Color(R, G, B),
+                                 WHITE, enemyConfig.outline);
     e->cTransform->angle += angle;
   }
 }
 
+// TODO if (even.type == sf::Event::KeyPressed) {switch event.key.code...} etc
+// else if (event.type == sf::eEvent::KeyReleased) switch...
 void Game::sUserInput() {
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) ||
       sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
@@ -175,25 +226,25 @@ void Game::sUserClearInput() {
 }
 
 void Game::spawnBullet(std::shared_ptr<Entity> p, const Vec2 &m) {
-  if (currentFrame - lastBulletSpawn > 20 && p->cInput->shoot) {
+  if (currentFrame - lastBulletSpawn > bulletConfig.throttle &&
+      p->cInput->shoot) {
     lastBulletSpawn = currentFrame;
     float x = m.x - p->cShape->shape.getPosition().x;
     float y = m.y - p->cShape->shape.getPosition().y;
     float c = sqrt(x * x + y * y);
     float posX = p->cShape->shape.getPosition().x;
     float posY = p->cShape->shape.getPosition().y;
-    float velX = x / c * 10.0f;
-    float velY = y / c * 10.0f;
-    int sides = 10;
-    int R = 255;
-    int G = 255;
-    int B = 255;
+    float velX = x / c * bulletConfig.vel;
+    float velY = y / c * bulletConfig.vel;
+    int sides = bulletConfig.sides;
     auto e = entityManager.addEntity("bullet");
     e->cTransform =
         std::make_shared<CTransform>(Vec2(posX, posY), Vec2(velX, velY));
-    e->cShape = std::make_shared<CShape>(5.0f, sides, sf::Color(R, G, B),
-                                         sf::Color(0, 0, 255), 1.0f);
-    e->cLifespan = std::make_shared<CLifespan>(currentFrame, 100);
+    e->cShape = std::make_shared<CShape>(
+        5.0f, sides, WHITE,
+        sf::Color(bulletConfig.R, bulletConfig.G, bulletConfig.B),
+        bulletConfig.outline);
+    e->cLifespan = std::make_shared<CLifespan>(currentFrame, bulletConfig.ttl);
   }
 };
 
@@ -235,12 +286,12 @@ void Game::spawnSmallEnemies(std::shared_ptr<Entity> e) {
   for (auto &p : vecs) {
     std::cout << p.first << " " << p.second << std::endl;
     auto s = entityManager.addEntity("enemy");
-    s->cShape = std::make_shared<CShape>(10.0f, e->cShape->vertices,
-                                         e->cShape->shape.getFillColor(),
-                                         sf::Color(255, 255, 255), 1.0f);
+    s->cShape = std::make_shared<CShape>(
+        e->cShape->radius / DFT_SM_EN_RESIZE, e->cShape->vertices,
+        e->cShape->shape.getFillColor(), WHITE, DFT_SM_EN_OUTLINE);
     s->cTransform = std::make_shared<CTransform>(e->cTransform->pos,
                                                  Vec2(p.first, p.second));
-    s->cLifespan = std::make_shared<CLifespan>(currentFrame, 180);
+    s->cLifespan = std::make_shared<CLifespan>(currentFrame, DFT_SM_EN_TTL);
   }
 }
 
