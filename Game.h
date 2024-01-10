@@ -15,6 +15,7 @@ class Game {
   PlayerConfig playerConfig;
   EnemyConfig enemyConfig;
   BulletConfig bulletConfig;
+  Vec2 mousePos;
   int score = 0;
   int currentFrame = 0;
   int lastEnemySpawn = 0;

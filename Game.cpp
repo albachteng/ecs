@@ -31,6 +31,7 @@ void Game::run() {
   while (running) {
     entityManager.update();
     if (!paused) {
+      spawnBullet(player, mousePos);
       sEnemySpawner();
       sMovement();
       sCollision();
@@ -144,6 +145,13 @@ void Game::sUserInput(sf::Event) {
     player->cInput->down = true;
     std::cout << "down" << std::endl;
   }
+  if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+    player->cInput->shoot = true;
+    std::cout << "shoot" << std::endl;
+    mousePos = Vec2(sf::Mouse::getPosition(window).x,
+                    sf::Mouse::getPosition(window).y);
+    std::cout << "mouse pos: " << mousePos.x << ", " << mousePos.y << std::endl;
+  }
 }
 
 void Game::sUserClearInput() {
@@ -153,7 +161,12 @@ void Game::sUserClearInput() {
   player->cInput->down = false;
 }
 
+void Game::spawnBullet(std::shared_ptr<Entity> entity, const Vec2 &mousePos){
+
+};
+
 void Game::sCollision() {
+  // TODO - the same but with bullets instead
   for (auto e : entityManager.getEntities("enemy"))
     for (auto p : entityManager.getEntities("player"))
       if (Physics::isCollision(e, p)) {

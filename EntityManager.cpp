@@ -10,7 +10,6 @@ void EntityManager::update() {
     entities.push_back(e);
     entityMap[e->getTag()].push_back(e);
   }
-  // TODO: remove dead entities
   entities.erase(std::remove_if(entities.begin(), entities.end(), isDead),
                  entities.end());
   toAdd.clear();
