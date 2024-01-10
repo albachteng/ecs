@@ -19,6 +19,7 @@ class Game {
   int score = 0;
   int currentFrame = 0;
   int lastEnemySpawn = 0;
+  int lastBulletSpawn = 0;
   bool paused = false;
   bool running = true;
   std::shared_ptr<Entity> player;

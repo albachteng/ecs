@@ -159,18 +159,38 @@ void Game::sUserClearInput() {
   player->cInput->right = false;
   player->cInput->up = false;
   player->cInput->down = false;
+  player->cInput->shoot = false;
 }
 
-void Game::spawnBullet(std::shared_ptr<Entity> entity, const Vec2 &mousePos){
-
+void Game::spawnBullet(std::shared_ptr<Entity> p, const Vec2 &m) {
+  if (currentFrame - lastBulletSpawn > 20 && p->cInput->shoot) {
+    lastBulletSpawn = currentFrame;
+    float x = m.x - p->cShape->shape.getPosition().x;
+    float y = m.y - p->cShape->shape.getPosition().y;
+    float c = sqrt(x * x + y * y);
+    float posX = p->cShape->shape.getPosition().x;
+    float posY = p->cShape->shape.getPosition().y;
+    float velX = x / c * 10.0f;
+    float velY = y / c * 10.0f;
+    int sides = 10;
+    int R = 255;
+    int G = 255;
+    int B = 255;
+    auto e = entityManager.addEntity("bullet");
+    e->cTransform =
+        std::make_shared<CTransform>(Vec2(posX, posY), Vec2(velX, velY));
+    e->cShape = std::make_shared<CShape>(5.0f, sides, sf::Color(R, G, B),
+                                         sf::Color(0, 0, 255), 1.0f);
+  }
 };
 
 void Game::sCollision() {
   // TODO - the same but with bullets instead
   for (auto e : entityManager.getEntities("enemy"))
-    for (auto p : entityManager.getEntities("player"))
-      if (Physics::isCollision(e, p)) {
+    for (auto b : entityManager.getEntities("bullet"))
+      if (Physics::isCollision(b, e)) {
         std::cout << "hit" << std::endl;
         e->destroy();
+        b->destroy();
       }
 }
