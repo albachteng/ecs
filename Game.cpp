@@ -32,7 +32,9 @@ void Game::run() {
       sEnemySpawner();
       sMovement();
       // sCollision();
-      // sUserInput();
+        sUserClearInput();
+
+      sUserInput(event);
     }
     sRender();
     currentFrame++;
@@ -83,6 +85,18 @@ void Game::sMovement() {
       e->cTransform->vel.y *= -1;
     }
   }
+  if (player->cInput->left) {
+    player->cTransform->vel.x -= 1.0f;
+  }
+  if (player->cInput->right) {
+    player->cTransform->vel.x += 1.0f;
+  }
+  if (player->cInput->up) {
+    player->cTransform->vel.y -= 1.0f;
+  }
+  if (player->cInput->down) {
+    player->cTransform->vel.y += 1.0f;
+  }
 }
 
 // TODO
@@ -106,4 +120,34 @@ void Game::sEnemySpawner() {
                                          sf::Color(255, 255, 255), 5.0f);
     e->cTransform->angle += angle;
   }
+}
+
+void Game::sUserInput(sf::Event) {
+  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) ||
+      sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+    player->cInput->left = true;
+    std::cout << "left" << std::endl;
+  }
+  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) ||
+      sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+    player->cInput->right = true;
+    std::cout << "right" << std::endl;
+  }
+  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) ||
+      sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+    player->cInput->up = true;
+    std::cout << "up" << std::endl;
+  }
+  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) ||
+      sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+    player->cInput->down = true;
+    std::cout << "down" << std::endl;
+  }
+}
+
+void Game::sUserClearInput() {
+  player->cInput->left = false;
+  player->cInput->right = false;
+  player->cInput->up = false;
+  player->cInput->down = false;
 }

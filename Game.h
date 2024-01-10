@@ -27,7 +27,8 @@ class Game {
 
   // Systems
   void sMovement(); // position, velocity, angle
-  void sUserInput();
+  void sUserInput(sf::Event);
+  void sUserClearInput();
   void sLifespan();
   void sRender();
   void sEnemySpawner();
