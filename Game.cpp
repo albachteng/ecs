@@ -20,7 +20,6 @@ void Game::init(const std::string &path) {
 }
 
 void Game::run() {
-  // TODO paused?
   sf::Event event;
   while (window.pollEvent(event)) {
     if (event.type == sf::Event::Closed) {
@@ -28,6 +27,9 @@ void Game::run() {
     }
   }
   while (running) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::P)) {
+      setPaused(!paused);
+    }
     entityManager.update();
     if (!paused) {
       spawnBullet(player, mousePos);
@@ -36,14 +38,19 @@ void Game::run() {
       sMovement();
       sCollision();
       sUserClearInput();
-      sUserInput(event);
+      sUserInput();
     }
     sRender();
     currentFrame++;
   }
 }
 
-void Game::setPaused(bool paused) { paused = paused; };
+void Game::setPaused(bool p) {
+  // eagerly pause, but don't unpause if they just hit P
+  if (currentFrame - lastPaused < 5)
+    paused = p;
+  lastPaused = currentFrame;
+};
 
 void Game::spawnPlayer() {
   auto entity = entityManager.addEntity("player");
@@ -124,7 +131,7 @@ void Game::sEnemySpawner() {
   }
 }
 
-void Game::sUserInput(sf::Event) {
+void Game::sUserInput() {
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) ||
       sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
     player->cInput->left = true;
@@ -152,6 +159,10 @@ void Game::sUserInput(sf::Event) {
                     sf::Mouse::getPosition(window).y);
     std::cout << "mouse pos: " << mousePos.x << ", " << mousePos.y << std::endl;
   }
+  // if (sf::Keyboard::isKeyPressed(sf::Keyboard::P)) {
+  //   setPaused(!paused);
+  //   std::cout << "paused: " << paused << std::endl;
+  // }
 }
 
 void Game::sUserClearInput() {
