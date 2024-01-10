@@ -11,9 +11,9 @@ void EntityManager::update() {
   entityMap["bullet"].erase(std::remove_if(entityMap["bullet"].begin(),
                                            entityMap["bullet"].end(), isDead),
                             entityMap["bullet"].end());
-  entityMap["enemy"].erase(std::remove_if(entityMap["bullet"].begin(),
-                                          entityMap["bullet"].end(), isDead),
-                           entityMap["bullet"].end());
+  entityMap["enemy"].erase(std::remove_if(entityMap["enemy"].begin(),
+                                          entityMap["enemy"].end(), isDead),
+                           entityMap["enemy"].end());
   for (auto &e : toAdd) {
     entities.push_back(e);
     entityMap[e->getTag()].push_back(e);
