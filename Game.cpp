@@ -117,7 +117,7 @@ void Game::sEnemySpawner() {
     float posY = rand() % window.getSize().y;
     float velX = rand() % 10;
     float velY = rand() % 10;
-    int sides = rand() % 10;
+    int sides = (rand() % 7) + 3;
     int R = rand() % 255;
     int G = rand() % 255;
     int B = rand() % 255;
@@ -154,10 +154,11 @@ void Game::sUserInput() {
   }
   if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
     player->cInput->shoot = true;
-    std::cout << "shoot" << std::endl;
+    // std::cout << "shoot" << std::endl;
     mousePos = Vec2(sf::Mouse::getPosition(window).x,
                     sf::Mouse::getPosition(window).y);
-    std::cout << "mouse pos: " << mousePos.x << ", " << mousePos.y << std::endl;
+    // std::cout << "mouse pos: " << mousePos.x << ", " << mousePos.y <<
+    // std::endl;
   }
   // if (sf::Keyboard::isKeyPressed(sf::Keyboard::P)) {
   //   setPaused(!paused);
@@ -197,13 +198,11 @@ void Game::spawnBullet(std::shared_ptr<Entity> p, const Vec2 &m) {
 };
 
 void Game::sCollision() {
-  std::cout << "number of bullets: "
-            << entityManager.getEntities("bullet").size() << std::endl;
-  // TODO - the same but with bullets instead
   for (auto b : entityManager.getEntities("bullet")) {
     for (auto e : entityManager.getEntities("enemy")) {
       if (Physics::isCollision(b, e)) {
         std::cout << "hit" << std::endl;
+        spawnSmallEnemies(e);
         e->destroy();
         b->destroy();
       }
@@ -211,10 +210,46 @@ void Game::sCollision() {
   }
 }
 
+std::vector<std::pair<float, float>> generateVelocityVectors(int numVertices,
+                                                             int angleOffset) {
+  // Calculate the angle between each pair of consecutive vectors
+  float angleIncrement = 2 * M_PI / numVertices;
+
+  // Generate velocity vectors
+  std::vector<std::pair<float, float>> velocityVectors;
+  for (int i = 0; i < numVertices; ++i) {
+    float angle = (i * angleIncrement) + angleOffset;
+    float x = std::cos(angle);
+    float y = std::sin(angle);
+    velocityVectors.push_back({x, y});
+  }
+
+  return velocityVectors;
+}
+
+void Game::spawnSmallEnemies(std::shared_ptr<Entity> e) {
+  std::cout << "small enemy with " << e->cShape->vertices << " sides"
+            << std::endl;
+  std::vector<std::pair<float, float>> vecs =
+      generateVelocityVectors(e->cShape->vertices, e->cTransform->angle);
+  for (auto &p : vecs) {
+    std::cout << p.first << " " << p.second << std::endl;
+    auto s = entityManager.addEntity("enemy");
+    s->cShape = std::make_shared<CShape>(10.0f, e->cShape->vertices,
+                                         e->cShape->shape.getFillColor(),
+                                         sf::Color(255, 255, 255), 1.0f);
+    s->cTransform = std::make_shared<CTransform>(e->cTransform->pos,
+                                                 Vec2(p.first, p.second));
+    s->cLifespan = std::make_shared<CLifespan>(currentFrame, 180);
+  }
+}
+
 void Game::sLifespan() {
-  for (auto b : entityManager.getEntities("bullet")) {
-    if (currentFrame - b->cLifespan->start >= b->cLifespan->ttl) {
-      b->destroy();
+  for (auto e : entityManager.getEntities()) {
+    if (e->cLifespan) {
+      if (currentFrame - e->cLifespan->start >= e->cLifespan->ttl) {
+        e->destroy();
+      }
     }
   }
 }
