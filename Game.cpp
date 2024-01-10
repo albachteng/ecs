@@ -27,11 +27,11 @@ void Game::run() {
       window.close();
     }
   }
-  std::cout << window.isOpen();
   while (running) {
     entityManager.update();
     if (!paused) {
       spawnBullet(player, mousePos);
+      sLifespan();
       sEnemySpawner();
       sMovement();
       sCollision();
@@ -181,16 +181,27 @@ void Game::spawnBullet(std::shared_ptr<Entity> p, const Vec2 &m) {
         std::make_shared<CTransform>(Vec2(posX, posY), Vec2(velX, velY));
     e->cShape = std::make_shared<CShape>(5.0f, sides, sf::Color(R, G, B),
                                          sf::Color(0, 0, 255), 1.0f);
+    e->cLifespan = std::make_shared<CLifespan>(currentFrame, 10);
   }
 };
 
 void Game::sCollision() {
   // TODO - the same but with bullets instead
-  for (auto e : entityManager.getEntities("enemy"))
-    for (auto b : entityManager.getEntities("bullet"))
+  for (auto b : entityManager.getEntities("bullet")) {
+    for (auto e : entityManager.getEntities("enemy")) {
       if (Physics::isCollision(b, e)) {
         std::cout << "hit" << std::endl;
         e->destroy();
         b->destroy();
       }
+    }
+  }
+}
+
+void Game::sLifespan() {
+  for (auto b : entityManager.getEntities("bullet")) {
+    if (currentFrame - b->cLifespan->start >= b->cLifespan->ttl) {
+      b->destroy();
+    }
+  }
 }

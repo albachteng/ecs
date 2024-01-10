@@ -1,6 +1,7 @@
 #pragma once
 #include "CBBox.cpp"
 #include "CInput.h"
+#include "CLifespan.h"
 #include "CName.cpp"
 #include "CShape.cpp"
 #include "CTransform.cpp"
@@ -20,6 +21,7 @@ public:
   std::shared_ptr<CShape> cShape;
   std::shared_ptr<CBBox> cBBox;
   std::shared_ptr<CInput> cInput;
+  std::shared_ptr<CLifespan> cLifespan;
   Entity();
   Entity(const std::string &tag, size_t id);
   std::string getTag();

@@ -1,7 +1,7 @@
 #pragma once
 class CLifespan {
 public:
-  int total;
-  int remaining;
-  CLifespan(int total) : remaining(total), total(total){};
+  int start;
+  int ttl;
+  CLifespan(int current, int ttl) : start(current), ttl(ttl){};
 };
