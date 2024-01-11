@@ -8,6 +8,14 @@ const Vec2 Vec2::operator+(const Vec2 &rhs) {
   return Vec2(this->x + rhs.x, this->y + rhs.y);
 };
 
+const Vec2 Vec2::operator-(const Vec2 &rhs) {
+  return Vec2(this->x - rhs.x, this->y - rhs.y);
+};
+
+const Vec2 Vec2::operator*(float scale) {
+  return Vec2(this->x * scale, this->y * scale);
+};
+
 const float Vec2::X() { return x; }
 
 const float Vec2::Y() { return y; }
@@ -15,6 +23,18 @@ const float Vec2::Y() { return y; }
 Vec2 &Vec2::operator+=(const Vec2 &rhs) {
   x += rhs.x;
   y += rhs.y;
+  return *this;
+};
+
+Vec2 &Vec2::operator-=(const Vec2 &rhs) {
+  x -= rhs.x;
+  y -= rhs.y;
+  return *this;
+};
+
+Vec2 &Vec2::operator*=(float scale) {
+  x *= scale;
+  y *= scale;
   return *this;
 };
 

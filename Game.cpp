@@ -11,30 +11,13 @@
 #define DFT_FRAMERATE 60
 #define DFT_PAUSE_THROTTLE 5
 
-#define DFT_PL_VEL Vec2(1.0f, 1.0f)
-#define DFT_PL_RAD 50.0f
-#define DFT_PL_COLOR sf::Color(0, 0, 0)
-#define DFT_PL_OUTLINE_COLOR sf::Color(255, 0, 0)
-#define DFT_PL_OUTLINE 5.0f
-
 #define DFT_EN_SPAWNRATE 180
-#define DFT_EN_VEL_MAX 10
-#define DFT_EN_VEL_MIN 3
-#define DFT_EN_RAD 50.0f
-#define DFT_EN_MAX_SIDES 10
-#define DFT_EN_MIN_SIDES 3
-#define DFT_EN_OUTLINE 5.0f
-
-#define DFT_BLT_THROTTLE 20
-#define DFT_BLT_VEL 10.0f
-#define DFT_BLT_SIDES 10
-#define DFT_BLT_OUTLINE 1.0f
-#define DFT_BLT_TTL 100
-#define DFT_BLT_COLOR sf::Color(0, 0, 255)
 
 #define DFT_SM_EN_RESIZE 2.5f
 #define DFT_SM_EN_OUTLINE 1.0f
 #define DFT_SM_EN_TTL 180
+
+#define DAMPING 0.95f
 
 #define WHITE sf::Color(255, 255, 255)
 
@@ -73,6 +56,8 @@ void Game::run() {
       setPaused(!paused);
     }
     entityManager.update();
+    std::cout << "size: " << entityManager.getEntities("small enemy").size()
+              << std::endl;
     if (!paused) {
       spawnBullet(player, mousePos);
       sLifespan();
@@ -133,12 +118,12 @@ void Game::sMovement() {
     if (e->cTransform->pos.x >=
             window.getSize().x - e->cShape->shape.getRadius() ||
         e->cTransform->pos.x <= e->cShape->shape.getRadius()) {
-      e->cTransform->vel.x *= -1;
+      e->cTransform->vel.x *= -DAMPING;
     }
     if (e->cTransform->pos.y >=
             window.getSize().y - e->cShape->shape.getRadius() ||
         e->cTransform->pos.y <= e->cShape->shape.getRadius()) {
-      e->cTransform->vel.y *= -1;
+      e->cTransform->vel.y *= -DAMPING;
     }
   }
   if (player->cInput->left) {
@@ -250,12 +235,34 @@ void Game::spawnBullet(std::shared_ptr<Entity> p, const Vec2 &m) {
 
 void Game::sCollision() {
   for (auto b : entityManager.getEntities("bullet")) {
+    for (auto e : entityManager.getEntities("small enemy")) {
+      if (Physics::isCollision(b, e)) {
+        std::cout << "hit" << std::endl;
+        // spawnSmallEnemies(e);
+        e->destroy();
+        b->destroy();
+      }
+    }
     for (auto e : entityManager.getEntities("enemy")) {
       if (Physics::isCollision(b, e)) {
         std::cout << "hit" << std::endl;
         spawnSmallEnemies(e);
         e->destroy();
         b->destroy();
+      }
+    }
+  }
+  for (ptrdiff_t i = 0; i < entityManager.getEntities("enemy").size(); i++) {
+    for (ptrdiff_t j = i + 1; j < entityManager.getEntities("enemy").size();
+         j++) {
+      auto &first = entityManager.getEntities("enemy")[i];
+      auto &second = entityManager.getEntities("enemy")[j];
+      if (Physics::isCollision(first, second)) {
+        // they should bounce off of one-another
+        // first->cTransform->vel -= (second->cTransform->vel * DAMPING);
+        // second->cTransform->vel -= (first->cTransform->vel * DAMPING);
+        first->cTransform->vel *= -DAMPING;
+        second->cTransform->vel *= -DAMPING;
       }
     }
   }
@@ -285,7 +292,7 @@ void Game::spawnSmallEnemies(std::shared_ptr<Entity> e) {
       generateVelocityVectors(e->cShape->vertices, e->cTransform->angle);
   for (auto &p : vecs) {
     std::cout << p.first << " " << p.second << std::endl;
-    auto s = entityManager.addEntity("enemy");
+    auto s = entityManager.addEntity("small enemy");
     s->cShape = std::make_shared<CShape>(
         e->cShape->radius / DFT_SM_EN_RESIZE, e->cShape->vertices,
         e->cShape->shape.getFillColor(), WHITE, DFT_SM_EN_OUTLINE);

@@ -6,12 +6,12 @@
 typedef struct BulletConfig {
   int throttle, sides, ttl, R, G, B;
   float vel, outline;
-};
+} BulletConfig;
 
 typedef struct EnemyConfig {
   float radius, outline;
   int spawnate, maxVel, minVel, maxSides, minSides;
-};
+} EnemyConfig;
 
 typedef struct PlayerConfig {
   float velX, velY, radius, outline;
