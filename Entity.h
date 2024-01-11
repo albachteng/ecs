@@ -3,6 +3,7 @@
 #include "CInput.h"
 #include "CLifespan.h"
 #include "CName.cpp"
+#include "CScore.h"
 #include "CShape.cpp"
 #include "CTransform.cpp"
 #include <memory>
@@ -22,6 +23,7 @@ public:
   std::shared_ptr<CBBox> cBBox;
   std::shared_ptr<CInput> cInput;
   std::shared_ptr<CLifespan> cLifespan;
+  std::shared_ptr<CScore> cScore;
   Entity();
   Entity(const std::string &tag, size_t id);
   std::string getTag();

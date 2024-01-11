@@ -1,5 +1,6 @@
 #pragma once
 #include "Game.h"
+#include "CScore.h"
 #include "Physics.h"
 #include <cstdlib>
 #include <fstream>
@@ -162,6 +163,7 @@ void Game::sEnemySpawner() {
         std::make_shared<CShape>(enemyConfig.radius, sides, sf::Color(R, G, B),
                                  WHITE, enemyConfig.outline);
     e->cTransform->angle += angle;
+    e->cScore = std::make_shared<CScore>(50);
   }
 }
 
@@ -241,6 +243,7 @@ void Game::sCollision() {
         // spawnSmallEnemies(e);
         e->destroy();
         b->destroy();
+        score += e->cScore->score;
       }
     }
     for (auto e : entityManager.getEntities("enemy")) {
@@ -249,6 +252,7 @@ void Game::sCollision() {
         spawnSmallEnemies(e);
         e->destroy();
         b->destroy();
+        score += e->cScore->score;
       }
     }
   }
@@ -299,6 +303,7 @@ void Game::spawnSmallEnemies(std::shared_ptr<Entity> e) {
     s->cTransform = std::make_shared<CTransform>(e->cTransform->pos,
                                                  Vec2(p.first, p.second));
     s->cLifespan = std::make_shared<CLifespan>(currentFrame, DFT_SM_EN_TTL);
+    s->cScore = std::make_shared<CScore>(100);
   }
 }
 
