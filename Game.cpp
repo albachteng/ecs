@@ -120,10 +120,9 @@ void Game::sRender() {
 
 void Game::sMovement() {
   for (auto &e : entityManager.getEntities()) {
-    if (e->cTransform) {
-      e->cTransform->pos.x += e->cTransform->vel.x;
-      e->cTransform->pos.y += e->cTransform->vel.y;
-    }
+    // problem: clipping through the edges - need rescue mechanism
+    // solution? push position back immediately?
+    // or lower the max velocity to avoid clipping in the first place?
     if (e->cTransform->pos.x >=
             window.getSize().x - e->cShape->shape.getRadius() ||
         e->cTransform->pos.x <= e->cShape->shape.getRadius()) {
@@ -134,18 +133,22 @@ void Game::sMovement() {
         e->cTransform->pos.y <= e->cShape->shape.getRadius()) {
       e->cTransform->vel.y *= -DAMPING;
     }
-  }
-  if (player->cInput->left) {
-    player->cTransform->vel.x -= .1f;
-  }
-  if (player->cInput->right) {
-    player->cTransform->vel.x += .1f;
-  }
-  if (player->cInput->up) {
-    player->cTransform->vel.y -= .1f;
-  }
-  if (player->cInput->down) {
-    player->cTransform->vel.y += .1f;
+    if (player->cInput->left) {
+      player->cTransform->vel.x -= .1f;
+    }
+    if (player->cInput->right) {
+      player->cTransform->vel.x += .1f;
+    }
+    if (player->cInput->up) {
+      player->cTransform->vel.y -= .1f;
+    }
+    if (player->cInput->down) {
+      player->cTransform->vel.y += .1f;
+    }
+    if (e->cTransform) {
+      e->cTransform->pos.x += e->cTransform->vel.x;
+      e->cTransform->pos.y += e->cTransform->vel.y;
+    }
   }
 }
 

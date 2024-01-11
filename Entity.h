@@ -1,5 +1,5 @@
 #pragma once
-#include "CBBox.cpp"
+#include "CBBox.h"
 #include "CInput.h"
 #include "CLifespan.h"
 #include "CName.cpp"

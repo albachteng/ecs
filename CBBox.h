@@ -1,11 +1,11 @@
+#pragma once
 #include "Vec2.cpp"
 
-class CBBox {
+typedef struct CBBox {
   Vec2 min, max;
-
-public:
-  CBBox();
-  CBBox(const Vec2 &min, const Vec2 &max);
-  bool contains(Vec2 &point);
-  bool intersects(CBBox &other);
-};
+  // TODO:
+  Vec2 size;
+  Vec2 halfSize;
+  // CBBox();
+  // CBBox(const Vec2 &min, const Vec2 &max);
+} CBBox;
