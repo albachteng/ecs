@@ -56,4 +56,5 @@ class Game {
 public:
   Game(const std::string &path);
   void run();
+  void setFont(const std::string &path);
 };

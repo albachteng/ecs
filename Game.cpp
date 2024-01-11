@@ -6,6 +6,7 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <string>
 
 #define DFT_WIN_W 1280
 #define DFT_WIN_H 720
@@ -22,6 +23,7 @@
 
 #define WHITE sf::Color(255, 255, 255)
 
+void Game::setFont(const std::string &path) { font.loadFromFile(path); }
 Game::Game(const std::string &path) { init(path); }
 
 void Game::init(const std::string &path) {
@@ -42,6 +44,10 @@ void Game::init(const std::string &path) {
   // TODO read in from config file, fullscreen/windows
   window.create(sf::VideoMode(DFT_WIN_W, DFT_WIN_H), "game thang");
   window.setFramerateLimit(DFT_FRAMERATE);
+  text.setFont(font);
+  text.setCharacterSize(24);
+  text.setFillColor(WHITE);
+  text.setPosition(0, 0);
   spawnPlayer();
 }
 
@@ -98,6 +104,7 @@ void Game::spawnPlayer() {
 
 void Game::sRender() {
   window.clear();
+  text.setString(std::to_string(score));
   for (auto &e : entityManager.getEntities()) {
     if (e->cShape && e->cTransform) {
       e->cShape->shape.setPosition(e->cTransform->pos.X(),
@@ -107,6 +114,7 @@ void Game::sRender() {
       window.draw(e->cShape->shape);
     }
   }
+  window.draw(text);
   window.display();
 }
 
